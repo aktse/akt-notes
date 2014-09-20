@@ -12,13 +12,12 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class NewItem extends Activity {
 
 	public final static String EXTRA_MESSAGE = "cs.ualberta.akt.akt_notes.newItem";	
-	
-	private ItemManager itemManager;
-	
+		
 	private ArrayList<ToDoItem> toDoItems;
 	
 	
@@ -30,10 +29,8 @@ public class NewItem extends Activity {
 
     protected void onStart(){
     	super.onStart();
-    	
-    	itemManager = new ItemManager();
-    	toDoItems = itemManager.loadItems();    	
-
+    	DataWrapper dw = (DataWrapper)getIntent().getSerializableExtra("items");
+    	toDoItems = dw.getArray();
     }
 	
 	@Override
@@ -55,13 +52,16 @@ public class NewItem extends Activity {
 	
 	public void addItem(View view){
 		Intent addIntent = new Intent(this, MainActivity.class);
+		
 		EditText newEditText = (EditText) findViewById(R.id.newEditText);
 		String newItem = newEditText.getText().toString();
 		
 		ToDoItem toDoItem = new ToDoItem(newItem);
 		toDoItems.add(toDoItem);
-		itemManager.saveItems(toDoItems);
 		
+		addIntent.setType("other");
+		addIntent.putExtra("uniqueID", "newItem");
+		addIntent.putExtra("items", new DataWrapper(toDoItems));
 		startActivity(addIntent);
 	}
 }

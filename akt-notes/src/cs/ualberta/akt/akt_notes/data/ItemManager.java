@@ -1,15 +1,17 @@
 package cs.ualberta.akt.akt_notes.data;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+
 import cs.ualberta.akt.akt_notes.ToDoItem;
 
 public class ItemManager {
 
-	private static final String FILENAME = "file.sav";
+	private static final String FILENAME = "file.txt";
 	
 	public ItemManager(){
 		

@@ -39,24 +39,28 @@ public class MainActivity extends Activity {
         
         setContentView(R.layout.activity_main);
         itemList = (ListView) findViewById(R.id.itemsList);
+    	itemManager = new ItemManager();
+    	
+    	Intent intent = this.getIntent();
+    	if (intent.getType() == null){
+    		toDoItems = itemManager.loadItems();	
+    	} else {
+        	String uniqueID = intent.getStringExtra("uniqueID");
+        	
+        	if (uniqueID.equals("newItem")){
+        		DataWrapper dw = (DataWrapper)intent.getSerializableExtra("items");
+            	toDoItems = dw.getArray();
+        	}	
+ 		
+    	}
+    	toDoItemsViewAdapter = new ArrayAdapter<ToDoItem>(this, R.layout.list_item, toDoItems);
+    	itemList.setAdapter(toDoItemsViewAdapter);
     }
 
     protected void onStart(){
     	super.onStart();
     	
-    	itemManager = new ItemManager();
-    	toDoItems = itemManager.loadItems();
-    	ToDoItem helloWorld = new ToDoItem("Hello World");
-    	toDoItems.add(helloWorld);
-    	itemManager.saveItems(toDoItems);
-    	
-    	toDoItems.clear();
-    	toDoItems = itemManager.loadItems();
-    	toDoItemsViewAdapter = new ArrayAdapter<ToDoItem>(this, R.layout.list_item, toDoItems);
-    	itemList.setAdapter(toDoItemsViewAdapter);
-    	
-    	toDoItemsViewAdapter.notifyDataSetChanged();
-    	
+    	    	
     }
     /*
     protected void onResume(){
@@ -69,6 +73,13 @@ public class MainActivity extends Activity {
     	
     }
     */
+    
+    protected void onPause(){
+    	super.onPause();
+    	//save stuff here
+    	
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -82,10 +93,10 @@ public class MainActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        itemManager.saveItems(toDoItems);
         if (id == R.id.action_new) {
         	//Toast.makeText(this, "new has been selected", Toast.LENGTH_SHORT).show();
         	Intent newIntent = new Intent(this, NewItem.class);
+        	newIntent.putExtra("items", new DataWrapper(toDoItems));
         	startActivity(newIntent);
             return true;
         } else if (id == R.id.action_edit){
