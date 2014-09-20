@@ -22,6 +22,7 @@ public class ItemManager {
 			FileInputStream fis = new FileInputStream(FILENAME);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			tdl = (ArrayList<ToDoItem>) ois.readObject();
+			fis.close();
 			ois.close();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -37,6 +38,7 @@ public class ItemManager {
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(tdl);
 			fos.close();
+			oos.close();
 		} catch (Exception e){
 			e.printStackTrace();
 		}

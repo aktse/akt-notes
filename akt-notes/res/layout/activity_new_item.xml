@@ -7,7 +7,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="cs.ualberta.akt.akt_notes.NewItem" >
-
+    
     <EditText
         android:id="@+id/newEditText"
         android:layout_width="fill_parent"
@@ -23,5 +23,5 @@
         android:layout_centerHorizontal="true"
         android:text="@string/action_done"
         android:onClick="addItem" />
-
+    
 </RelativeLayout>

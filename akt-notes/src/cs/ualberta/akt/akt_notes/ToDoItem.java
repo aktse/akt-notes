@@ -39,4 +39,7 @@ public class ToDoItem implements Serializable {
 		this.archived = !this.archived;
 	}
 	
+	public String toString() {
+		return toDoItem;
+	}
 }

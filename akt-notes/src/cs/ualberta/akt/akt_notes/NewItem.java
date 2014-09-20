@@ -1,16 +1,26 @@
 package cs.ualberta.akt.akt_notes;
 
+import java.util.ArrayList;
+
+import cs.ualberta.akt.akt_notes.data.ItemManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 
 public class NewItem extends Activity {
 
-	public final static String EXTRA_MESSAGE = "cs.ualberta.akt.akt_notes.newItem";
+	public final static String EXTRA_MESSAGE = "cs.ualberta.akt.akt_notes.newItem";	
+	
+	private ItemManager itemManager;
+	
+	private ArrayList<ToDoItem> toDoItems;
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +28,14 @@ public class NewItem extends Activity {
 		setContentView(R.layout.activity_new_item);
 	}
 
+    protected void onStart(){
+    	super.onStart();
+    	
+    	itemManager = new ItemManager();
+    	toDoItems = itemManager.loadItems();    	
+
+    }
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -39,7 +57,11 @@ public class NewItem extends Activity {
 		Intent addIntent = new Intent(this, MainActivity.class);
 		EditText newEditText = (EditText) findViewById(R.id.newEditText);
 		String newItem = newEditText.getText().toString();
-		addIntent.putExtra(EXTRA_MESSAGE, newItem);
+		
+		ToDoItem toDoItem = new ToDoItem(newItem);
+		toDoItems.add(toDoItem);
+		itemManager.saveItems(toDoItems);
+		
 		startActivity(addIntent);
 	}
 }
