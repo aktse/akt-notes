@@ -2,7 +2,6 @@ package cs.ualberta.akt.akt_notes;
 
 import java.util.ArrayList;
 
-import cs.ualberta.akt.akt_notes.data.ItemManager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -40,6 +39,7 @@ public class NewItem extends Activity {
 		return true;
 	}
 
+	/*
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle action bar item clicks here. The action bar will
@@ -48,7 +48,7 @@ public class NewItem extends Activity {
 		int id = item.getItemId();
 
 		return super.onOptionsItemSelected(item);
-	}
+	}*/
 	
 	public void addItem(View view){
 		Intent addIntent = new Intent(this, MainActivity.class);

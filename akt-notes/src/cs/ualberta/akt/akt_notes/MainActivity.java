@@ -1,5 +1,10 @@
 package cs.ualberta.akt.akt_notes;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import android.app.Activity;
@@ -18,13 +23,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 import android.os.Build;
 
-import cs.ualberta.akt.akt_notes.data.ItemManager;
-
 
 
 public class MainActivity extends Activity {
 
-	private ItemManager itemManager;
+	//private ItemManager itemManager;
 	
 	private ArrayList<ToDoItem> toDoItems;
 	
@@ -39,11 +42,28 @@ public class MainActivity extends Activity {
         
         setContentView(R.layout.activity_main);
         itemList = (ListView) findViewById(R.id.itemsList);
-    	itemManager = new ItemManager();
     	
     	Intent intent = this.getIntent();
     	if (intent.getType() == null){
-    		toDoItems = itemManager.loadItems();	
+    		toDoItems = new ArrayList<ToDoItem>();	
+    		
+        	File file = new File(this.getFilesDir(),"file.txt");
+        	if (!file.exists()){
+        		file.mkdirs();
+        	}
+        	
+        	File myFile = new File(file, "myfile.txt");
+        	
+    		try {
+    			FileInputStream fin = new FileInputStream(myFile);
+    			ObjectInputStream oin = new ObjectInputStream(fin);
+    			toDoItems = (ArrayList<ToDoItem>) oin.readObject();
+    			fin.close();
+    			oin.close();
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    		
     	} else {
         	String uniqueID = intent.getStringExtra("uniqueID");
         	
@@ -78,6 +98,23 @@ public class MainActivity extends Activity {
     	super.onPause();
     	//save stuff here
     	
+    	File file = new File(this.getFilesDir(),"file.txt");
+    	if (!file.exists()){
+    		file.mkdirs();
+    	}
+    	
+    	File myFile = new File(file, "myfile.txt");
+    	
+    	try {
+			FileOutputStream fout = new FileOutputStream(myFile);
+			ObjectOutputStream oout = new ObjectOutputStream(fout);
+			oout.writeObject(toDoItems);
+			fout.close();
+			oout.close();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+    	//itemManager.saveItems(toDoItems);
     }
     
     @Override

@@ -11,10 +11,6 @@ public class DataWrapper implements Serializable{
 		this.toDoItems = arrayItems;
 	}
 	
-	public void setArray(ArrayList<ToDoItem> arrayItems){
-		this.toDoItems = arrayItems;
-	}
-	
 	public ArrayList<ToDoItem> getArray(){
 		return this.toDoItems;
 	}
