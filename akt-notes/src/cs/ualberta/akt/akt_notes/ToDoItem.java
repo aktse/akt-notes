@@ -3,6 +3,8 @@ package cs.ualberta.akt.akt_notes;
 import java.io.Serializable;
 
 public class ToDoItem implements Serializable {
+
+	private static final long serialVersionUID = 3234955922865625246L;
 	
 	public String toDoItem;
 	public Boolean checkedOff;

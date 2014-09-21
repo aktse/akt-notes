@@ -5,6 +5,8 @@ import java.util.ArrayList;
 
 public class DataWrapper implements Serializable{
 
+	private static final long serialVersionUID = 1649888347434622256L;
+	
 	private ArrayList<ToDoItem> toDoItems;
 	
 	public DataWrapper(ArrayList<ToDoItem> arrayItems) {

@@ -6,12 +6,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Toast;
 
 public class NewItem extends Activity {
 
@@ -28,6 +24,8 @@ public class NewItem extends Activity {
 
     protected void onStart(){
     	super.onStart();
+    	
+    	//Gets the ArrayList passed from MainActivity
     	DataWrapper dw = (DataWrapper)getIntent().getSerializableExtra("items");
     	toDoItems = dw.getArray();
     }
@@ -50,18 +48,22 @@ public class NewItem extends Activity {
 		return super.onOptionsItemSelected(item);
 	}*/
 	
+	//Called when the "Done" button is clicked
 	public void addItem(View view){
 		Intent addIntent = new Intent(this, MainActivity.class);
 		
+		//Acquires string in EditText field that the user typed in
 		EditText newEditText = (EditText) findViewById(R.id.newEditText);
 		String newItem = newEditText.getText().toString();
 		
+		//Creates an object whose name is the string in the text field
 		ToDoItem toDoItem = new ToDoItem(newItem);
 		toDoItems.add(toDoItem);
 		
-		addIntent.setType("other");
-		addIntent.putExtra("uniqueID", "newItem");
-		addIntent.putExtra("items", new DataWrapper(toDoItems));
+		//Passes user back to MainActivity
+		addIntent.setType("other"); //Identifier used to identify useful intents to the intent used to launch app
+		addIntent.putExtra("uniqueID", "newItem"); //Identifier used to identify the different intents
+		addIntent.putExtra("items", new DataWrapper(toDoItems)); //ArrayList wrapped in an object
 		startActivity(addIntent);
 	}
 }

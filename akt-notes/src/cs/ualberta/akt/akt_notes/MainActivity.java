@@ -8,31 +8,21 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import android.app.Activity;
-import android.app.ActionBar;
-import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
-import android.os.Build;
 
 
 
 public class MainActivity extends Activity {
-
-	//private ItemManager itemManager;
 	
 	private ArrayList<ToDoItem> toDoItems;
-	
-	private ArrayAdapter<ToDoItem> toDoItemsViewAdapter;
-	
+		
 	private ListView itemList;
 
 	
@@ -44,16 +34,20 @@ public class MainActivity extends Activity {
         itemList = (ListView) findViewById(R.id.itemsList);
     	
     	Intent intent = this.getIntent();
+    	//If this activity was called for the first time (i.e launch) attempts to load data from internal storage
     	if (intent.getType() == null){
     		toDoItems = new ArrayList<ToDoItem>();	
     		
         	File file = new File(this.getFilesDir(),"file.txt");
+        	//Checks to see if directory exists
         	if (!file.exists()){
         		file.mkdirs();
         	}
         	
+        	//Creates a file in the directory if file doesn't already exist
         	File myFile = new File(file, "myfile.txt");
         	
+        	//Loads the object ArrayList
     		try {
     			FileInputStream fin = new FileInputStream(myFile);
     			ObjectInputStream oin = new ObjectInputStream(fin);
@@ -64,47 +58,57 @@ public class MainActivity extends Activity {
     			e.printStackTrace();
     		}
     		
-    	} else {
+    	} 
+    	//Activity was called by an intent
+    	else {
+    		//Checks to see which intent called this activity 
         	String uniqueID = intent.getStringExtra("uniqueID");
         	
+        	//Grabs the ArrayList from the data wrapper used to pass the ArrayList 
         	if (uniqueID.equals("newItem")){
         		DataWrapper dw = (DataWrapper)intent.getSerializableExtra("items");
             	toDoItems = dw.getArray();
         	}	
  		
     	}
-    	toDoItemsViewAdapter = new ArrayAdapter<ToDoItem>(this, R.layout.list_item, toDoItems);
+    	
+    	//Assigns CustomArrayAdapter to ListView
+    	final CustomArrayAdapter toDoItemsViewAdapter = new CustomArrayAdapter(this, toDoItems);
     	itemList.setAdapter(toDoItemsViewAdapter);
+    	
+    	//Assigns ItemClickListener to ListView to toggle check box on row click
+    	itemList.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				ToDoItem toDoItem = toDoItemsViewAdapter.getItem(position);
+				toDoItem.toggleCheckedOff();
+				toDoItemsViewAdapter.notifyDataSetChanged();
+			}
+    	
+    	
+    	});
     }
 
     protected void onStart(){
     	super.onStart();
-    	
     	    	
     }
-    /*
-    protected void onResume(){
-    	super.onResume();
-    	
-    	toDoItems = itemManager.loadItems();
-    	ToDoItem byeWorld = new ToDoItem("Bye World");
-    	toDoItems.add(byeWorld);
-    	toDoItemsViewAdapter.notifyDataSetChanged();
-    	
-    }
-    */
-    
+
     protected void onPause(){
+    	//Is called whenever the activity becomes invisible.
+    	//Trivial while app is running but enables saving of data when the app is closed
     	super.onPause();
-    	//save stuff here
     	
+    	//Checks to make sure directory exists
     	File file = new File(this.getFilesDir(),"file.txt");
     	if (!file.exists()){
     		file.mkdirs();
     	}
     	
+    	//Creates file in the directory if file doesn't already exist
     	File myFile = new File(file, "myfile.txt");
     	
+    	//Saves the array to internal storage
     	try {
 			FileOutputStream fout = new FileOutputStream(myFile);
 			ObjectOutputStream oout = new ObjectOutputStream(fout);
@@ -114,7 +118,6 @@ public class MainActivity extends Activity {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-    	//itemManager.saveItems(toDoItems);
     }
     
     @Override
@@ -130,16 +133,21 @@ public class MainActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        
+        //Prepares the activity to transition to the add new item activity
+        //Passes the ArrayList of items in a data wrapper 
         if (id == R.id.action_new) {
-        	//Toast.makeText(this, "new has been selected", Toast.LENGTH_SHORT).show();
         	Intent newIntent = new Intent(this, NewItem.class);
         	newIntent.putExtra("items", new DataWrapper(toDoItems));
         	startActivity(newIntent);
             return true;
-        } else if (id == R.id.action_edit){
+        } 
+        //Prepares the activity to transition to the edit mode activity
+        else if (id == R.id.action_edit){
         	Toast.makeText(this,"edit has been selected", Toast.LENGTH_SHORT).show();
         }
         return super.onOptionsItemSelected(item);
     }
 
+    
 }
