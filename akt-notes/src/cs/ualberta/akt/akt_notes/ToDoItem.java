@@ -9,12 +9,14 @@ public class ToDoItem implements Serializable {
 	public String toDoItem;
 	public Boolean checkedOff;
 	public Boolean archived;
+	public Boolean selected;
 	
 	public ToDoItem(String toDoItem) {
 		super();
 		this.toDoItem = toDoItem;
 		this.checkedOff = false;
 		this.archived = false;
+		this.selected = false;
 	}
 
 	public String getToDoItem() {
@@ -41,7 +43,11 @@ public class ToDoItem implements Serializable {
 		this.archived = !this.archived;
 	}
 	
-	public String toString() {
-		return toDoItem;
+	public Boolean getSelected(){
+		return selected;
+	}
+	
+	public void toggleSelected(){
+		this.selected = !this.selected;
 	}
 }

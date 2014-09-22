@@ -1,6 +1,9 @@
-package cs.ualberta.akt.akt_notes;
+package cs.ualberta.akt.akt_notes.adapters;
 
 import java.util.ArrayList;
+
+import cs.ualberta.akt.akt_notes.R;
+import cs.ualberta.akt.akt_notes.ToDoItem;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,6 +14,7 @@ import android.widget.TextView;
 import android.widget.CheckBox;
 
 public class CustomArrayAdapter extends ArrayAdapter<ToDoItem> {
+	
 	private ArrayList<ToDoItem> toDoItems = null;
 	
 	public CustomArrayAdapter(Context context, ArrayList<ToDoItem> toDoItems) {

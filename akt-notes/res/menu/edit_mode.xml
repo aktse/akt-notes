@@ -1,0 +1,26 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="cs.ualberta.akt.akt_notes.EditMode" >
+
+    <item
+        android:id="@+id/action_delete"
+        android:orderInCategory="1"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_delete"
+        android:icon="@drawable/ic_action_delete" />
+    
+    <item
+        android:id="@+id/action_archive"
+        android:orderInCategory="2"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_archive" 
+        android:icon="@drawable/ic_action_archive" />
+    
+    <item
+        android:id="@+id/action_email"
+        android:orderInCategory="3"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_email"
+        android:icon="@drawable/ic_action_email" />
+
+</menu>

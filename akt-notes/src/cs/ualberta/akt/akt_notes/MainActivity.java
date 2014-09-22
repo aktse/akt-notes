@@ -7,36 +7,82 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-import android.app.Activity;
+import cs.ualberta.akt.akt_notes.adapters.ArchivedArrayAdapter;
+import cs.ualberta.akt.akt_notes.adapters.CustomArrayAdapter;
+
+import android.app.ActionBar.Tab;
+import android.app.ActionBar;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.ListFragment;
+import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
+import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.Toast;
 
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity implements ActionBar.TabListener{
 	
-	private ArrayList<ToDoItem> toDoItems;
-		
-	private ListView itemList;
-
+	private static ArrayList<ToDoItem> toDoItems;
+	private static ArrayList<ToDoItem> archivedItems;
+	
+	private ViewPager viewPager;
+	private TabsPagerAdapter tabsPagerAdapter;
+	private String[] titles = {"To Do List", "Archive"};
+	
+	private ActionBar actionBar;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
         setContentView(R.layout.activity_main);
-        itemList = (ListView) findViewById(R.id.itemsList);
-    	
+        
+        viewPager = (ViewPager) findViewById(R.id.pager);
+        tabsPagerAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(tabsPagerAdapter);
+        
+        actionBar = getActionBar();
+        actionBar.setHomeButtonEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+        
+        for (String title : titles) {
+        	actionBar.addTab(actionBar.newTab().setText(title).setTabListener(this));
+        }
+        
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			
+			@Override
+			public void onPageSelected(int position) {
+				actionBar.setSelectedNavigationItem(position);
+				viewPager.getAdapter().notifyDataSetChanged();
+			}
+			
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+				// TODO Auto-generated method stub
+			}
+			
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+				// TODO Auto-generated method stub		
+			}
+		});
+        
     	Intent intent = this.getIntent();
     	//If this activity was called for the first time (i.e launch) attempts to load data from internal storage
     	if (intent.getType() == null){
-    		toDoItems = new ArrayList<ToDoItem>();	
+    		toDoItems = new ArrayList<ToDoItem>();
+    		archivedItems = new ArrayList<ToDoItem>();
     		
         	File file = new File(this.getFilesDir(),"file.txt");
         	//Checks to see if directory exists
@@ -45,13 +91,23 @@ public class MainActivity extends Activity {
         	}
         	
         	//Creates a file in the directory if file doesn't already exist
-        	File myFile = new File(file, "myfile.txt");
-        	
+        	File myItems = new File(file, "myItems.txt");
+        	File myFile = new File(file, "archivedItems.txt");
         	//Loads the object ArrayList
+    		try {
+    			FileInputStream fin = new FileInputStream(myItems);
+    			ObjectInputStream oin = new ObjectInputStream(fin);
+    			toDoItems = (ArrayList<ToDoItem>) oin.readObject();
+    			fin.close();
+    			oin.close();
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    		}
+    		
     		try {
     			FileInputStream fin = new FileInputStream(myFile);
     			ObjectInputStream oin = new ObjectInputStream(fin);
-    			toDoItems = (ArrayList<ToDoItem>) oin.readObject();
+    			archivedItems = (ArrayList<ToDoItem>) oin.readObject();
     			fin.close();
     			oin.close();
     		} catch (Exception e) {
@@ -72,21 +128,6 @@ public class MainActivity extends Activity {
  		
     	}
     	
-    	//Assigns CustomArrayAdapter to ListView
-    	final CustomArrayAdapter toDoItemsViewAdapter = new CustomArrayAdapter(this, toDoItems);
-    	itemList.setAdapter(toDoItemsViewAdapter);
-    	
-    	//Assigns ItemClickListener to ListView to toggle check box on row click
-    	itemList.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-				ToDoItem toDoItem = toDoItemsViewAdapter.getItem(position);
-				toDoItem.toggleCheckedOff();
-				toDoItemsViewAdapter.notifyDataSetChanged();
-			}
-    	
-    	
-    	});
     }
 
     protected void onStart(){
@@ -106,11 +147,12 @@ public class MainActivity extends Activity {
     	}
     	
     	//Creates file in the directory if file doesn't already exist
-    	File myFile = new File(file, "myfile.txt");
+    	File myItems = new File(file, "myItems.txt");
+    	File myFile = new File(file, "archivedItems.txt");
     	
     	//Saves the array to internal storage
     	try {
-			FileOutputStream fout = new FileOutputStream(myFile);
+			FileOutputStream fout = new FileOutputStream(myItems);
 			ObjectOutputStream oout = new ObjectOutputStream(fout);
 			oout.writeObject(toDoItems);
 			fout.close();
@@ -118,13 +160,27 @@ public class MainActivity extends Activity {
 		} catch (Exception e){
 			e.printStackTrace();
 		}
+    	
+    	try {
+    		FileOutputStream fout = new FileOutputStream(myFile);
+    		ObjectOutputStream oout = new ObjectOutputStream(fout);
+    		oout.writeObject(archivedItems);
+    		fout.close();
+    		oout.close();
+    	} catch (Exception e){
+    		e.printStackTrace();
+    	}
     }
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        //getMenuInflater().inflate(R.menu.to_do_list, menu);
         return true;
+    }
+    
+    public void onPageSelected(int pageNum){
+    	invalidateOptionsMenu();
     }
 
     @Override
@@ -144,10 +200,154 @@ public class MainActivity extends Activity {
         } 
         //Prepares the activity to transition to the edit mode activity
         else if (id == R.id.action_edit){
-        	Toast.makeText(this,"edit has been selected", Toast.LENGTH_SHORT).show();
+        	Intent editIntent = new Intent(this,EditMode.class);
+        	editIntent.putExtra("items", new DataWrapper(toDoItems));
+        	startActivity(editIntent);
         }
         return super.onOptionsItemSelected(item);
     }
 
-    
+	@Override
+	public void onTabSelected(Tab tab, FragmentTransaction ft) {
+			viewPager.setCurrentItem(tab.getPosition());
+	}
+
+	@Override
+	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onTabReselected(Tab tab, FragmentTransaction ft) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	public class TabsPagerAdapter extends FragmentPagerAdapter{
+
+		public TabsPagerAdapter(FragmentManager fm) {
+			super(fm);
+		}
+
+		@Override
+		public Fragment getItem(int position){
+			
+			if (position == 0){
+				//ToDoList
+				return new ToDoListFragment();
+			} else if (position == 1){
+				//Archive
+				return new ArchiveFragment();
+			}
+			
+			return null;
+		}
+		
+		@Override
+		public int getItemPosition(Object object){
+			return POSITION_NONE;
+		}
+
+		@Override
+		public int getCount() {
+			return 2;
+		}
+		
+		
+	}
+	
+	public static class ToDoListFragment extends ListFragment{
+		
+		public CustomArrayAdapter toDoItemsViewAdapter = null;
+		
+		@Override
+		public void onListItemClick(ListView l, View v, int position, long i){
+			
+			ToDoItem toDoItem = toDoItemsViewAdapter.getItem(position);
+			toDoItem.toggleCheckedOff();
+			toDoItemsViewAdapter.notifyDataSetChanged();
+			
+		}
+		
+		@Override
+		public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+			inflater.inflate(R.menu.to_do_list, menu);
+			super.onCreateOptionsMenu(menu, inflater);	
+		}
+		
+		@Override
+		public void onCreate(Bundle savedInstanceState){
+			super.onCreate(savedInstanceState);
+			setHasOptionsMenu(true);
+		}
+		
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+			
+	    	//Assigns CustomArrayAdapter to ListView
+	    	this.toDoItemsViewAdapter = new CustomArrayAdapter(getActivity(), toDoItems);
+	    	setListAdapter(toDoItemsViewAdapter);
+	    		
+			return inflater.inflate(R.layout.fragment_main, container, false);
+		}
+		
+	}
+	
+	public static class ArchiveFragment extends ListFragment{
+		
+		public ArchivedArrayAdapter archivedItemsViewAdapter = null;
+		
+		@Override
+		public void onListItemClick(ListView l, View v, int position, long i){
+			
+			ToDoItem archivedItem = archivedItemsViewAdapter.getItem(position);
+			archivedItem.toggleCheckedOff();
+			archivedItemsViewAdapter.notifyDataSetChanged();
+			
+		}
+		
+		@Override
+		public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
+			inflater.inflate(R.menu.archive_list, menu);
+			super.onCreateOptionsMenu(menu, inflater);
+		}
+		
+		@Override
+		public void onCreate(Bundle savedInstanceState){
+			super.onCreate(savedInstanceState);
+			setHasOptionsMenu(true);
+		}
+		
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancedState) {
+			
+			this.archivedItemsViewAdapter = new ArchivedArrayAdapter(getActivity(), archivedItems);
+			setListAdapter(archivedItemsViewAdapter);
+			archivedItemsViewAdapter.notifyDataSetChanged();
+				
+			return inflater.inflate(R.layout.fragment_main, container, false);
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
