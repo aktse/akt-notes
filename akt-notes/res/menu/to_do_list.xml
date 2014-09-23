@@ -1,27 +1,30 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="cs.ualberta.akt.akt_notes.MainActivity" >
-     
-    <item
-        android:id="@+id/action_new"
-        android:showAsAction="ifRoom"
-        android:orderInCategory="3"
-        android:title="@string/action_new"
-        android:icon="@drawable/ic_action_new" />
-    
-  	<item
-        android:id="@+id/action_email"
-        android:orderInCategory="2"
-        android:showAsAction="ifRoom"
-        android:title="@string/action_email"
-        android:icon="@drawable/ic_action_email" />
+
+	<item
+	    android:id="@+id/action_summary"
+	    android:showAsAction="always"
+	    android:title="@string/action_summary"
+	    android:icon="@drawable/ic_action_summary" />
     
     <item
         android:id="@+id/action_edit"
-        android:orderInCategory="1"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/action_edit"
         android:icon="@drawable/ic_action_edit" />
-
+   	
+   	<item
+        android:id="@+id/action_email"
+        android:showAsAction="always"
+        android:title="@string/action_email"
+        android:icon="@drawable/ic_action_email" />
+     
+    <item
+        android:id="@+id/action_new"
+        android:showAsAction="always"
+        android:title="@string/action_new"
+        android:icon="@drawable/ic_action_new" />
+    
 
 </menu>

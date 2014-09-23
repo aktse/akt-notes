@@ -26,8 +26,8 @@ public class NewItem extends Activity {
     protected void onStart(){
     	super.onStart();	
     	//Gets the ArrayList passed from MainActivity
-    	DataWrapper dw = (DataWrapper)getIntent().getSerializableExtra("items");
-    	toDoItems = dw.getArray();
+    	ItemWrapper iw = (ItemWrapper)getIntent().getSerializableExtra("items");
+    	toDoItems = iw.getArray();
     }
 	
 	@Override
@@ -52,7 +52,7 @@ public class NewItem extends Activity {
 		//Passes user back to MainActivity
 		addIntent.setType("other"); //Identifier used to identify useful intents to the intent used to launch app
 		addIntent.putExtra("uniqueID", "newItem"); //Identifier used to identify the different intents
-		addIntent.putExtra("items", new DataWrapper(toDoItems)); //ArrayList wrapped in an object
+		addIntent.putExtra("items", new ItemWrapper(toDoItems)); //ArrayList wrapped in an object
 		startActivity(addIntent);
 	}
 }

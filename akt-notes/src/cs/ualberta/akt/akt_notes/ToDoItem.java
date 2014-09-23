@@ -55,12 +55,4 @@ public class ToDoItem implements Serializable {
 		this.selected = false;
 	}
 	
-	public boolean isEqualTo(ToDoItem toDoItem){
-		boolean isEqualTo = false;
-		
-		if (this.toDoItem.equals(toDoItem.getToDoItem())){
-			isEqualTo = true;
-		}
-		return isEqualTo;
-	}
 }

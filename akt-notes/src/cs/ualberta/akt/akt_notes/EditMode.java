@@ -31,21 +31,22 @@ public class EditMode extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
 		setContentView(R.layout.activity_edit_mode);
         itemList = (ListView) findViewById(R.id.editList);
         
-    	//Gets the ArrayList passed from MainActivity
-    	DataWrapper dw = (DataWrapper)getIntent().getSerializableExtra("interest");
-    	transfer = dw.getArray();
+    	//Gets the ArrayList of items populating the current view passed from MainActivity
+    	ItemWrapper iw = (ItemWrapper)getIntent().getSerializableExtra("interest");
+    	transfer = iw.getArray();
     	itemsOfInterest = transfer;
     	
-    	DataWrapper dw_archive = (DataWrapper)getIntent().getSerializableExtra("others");
-    	otherItems = dw_archive.getArray();
+    	//Gets the ArrayList of items not populating the current view
+    	ItemWrapper iw_archive = (ItemWrapper)getIntent().getSerializableExtra("others");
+    	otherItems = iw_archive.getArray();
     	
+    	//Gets the view that called EditMode
     	viewFrom = getIntent().getStringExtra("View");
 
-    	//Assigns CustomArrayAdapter to ListView
+    	//Assigns EditModeCustomArrayAdapter to ListView + displays ArrayList of items
     	final EditModeCustomArrayAdapter toDoItemsViewAdapter = new EditModeCustomArrayAdapter(this, itemsOfInterest);
     	itemList.setAdapter(toDoItemsViewAdapter);
     	
@@ -62,7 +63,6 @@ public class EditMode extends FragmentActivity {
 				}
 				toDoItemsViewAdapter.notifyDataSetChanged();
 			}
-    	
     	});
 	}
 
@@ -80,6 +80,9 @@ public class EditMode extends FragmentActivity {
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		
+		//When an option is selected, create a dialogFragment to confirm the action
+		//Code derived from Android Developer website
+		//http://developer.android.com/guide/topics/ui/dialogs.html
 		if (id == R.id.action_delete) {
 			if (selected.isEmpty()){
 				Toast.makeText(this, "No items have been selected", Toast.LENGTH_SHORT).show();
@@ -100,6 +103,9 @@ public class EditMode extends FragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	//When "confirm" is clicked on dialogBox, performs an action based on which button is clicked
+	//Code derived from Android Developer website
+	//http://developer.android.com/guide/topics/ui/dialogs.html
 	public void doPositiveClick(String dialogID){
 		if (dialogID.equals("action_delete")){
 			for (int i = 0; i < selected.size(); i++){
@@ -120,15 +126,18 @@ public class EditMode extends FragmentActivity {
 		archiveIntent.setType("other");
 		archiveIntent.putExtra("uniqueID", "editItem");
 		archiveIntent.putExtra("View", viewFrom);
-		archiveIntent.putExtra("interest", new DataWrapper(transfer));
-		archiveIntent.putExtra("others", new DataWrapper(otherItems));
+		archiveIntent.putExtra("interest", new ItemWrapper(transfer));
+		archiveIntent.putExtra("others", new ItemWrapper(otherItems));
 		startActivity(archiveIntent);
 	}
 	
 	public void doNegativeClick(){
 		
 	}
-	
+
+	//DialogFragment
+	//Code derived from Android Developer website
+	//http://developer.android.com/guide/topics/ui/dialogs.html
 	public static class ConfirmationFragment extends DialogFragment {
 	    
 		@Override

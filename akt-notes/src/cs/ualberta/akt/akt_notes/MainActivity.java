@@ -12,9 +12,13 @@ import cs.ualberta.akt.akt_notes.adapters.CustomArrayAdapter;
 
 import android.app.ActionBar.Tab;
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.FragmentTransaction;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -28,9 +32,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
-
-
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener{
 	
@@ -48,6 +51,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
+        //Swipe views using tabs
+        //Code derived from Android Developer website
+        //http://developer.android.com/training/implementing-navigation/lateral.html
         viewPager = (ViewPager) findViewById(R.id.pager);
         tabsPagerAdapter = new TabsPagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(tabsPagerAdapter);
@@ -123,23 +129,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	
         	//Grabs the ArrayList from the data wrapper used to pass the ArrayList 
         	if (uniqueID.equals("newItem")){
-        		DataWrapper dw = (DataWrapper)intent.getSerializableExtra("items");
-            	toDoItems = dw.getArray();
+        		ItemWrapper iw = (ItemWrapper)intent.getSerializableExtra("items");
+            	toDoItems = iw.getArray();
         	} else if (uniqueID.equals("editItem")){
         		String viewFrom = intent.getStringExtra("View");
         		if (viewFrom.equals("toDoList")){
-        			DataWrapper dw = (DataWrapper)intent.getSerializableExtra("interest");
-        			toDoItems = dw.getArray();
+        			ItemWrapper iw = (ItemWrapper)intent.getSerializableExtra("interest");
+        			toDoItems = iw.getArray();
         		
-        			DataWrapper dw_archive = (DataWrapper)intent.getSerializableExtra("others");
-        			archivedItems = dw_archive.getArray();
+        			ItemWrapper iw_archive = (ItemWrapper)intent.getSerializableExtra("others");
+        			archivedItems = iw_archive.getArray();
         			
         		} else if (viewFrom.equals("archive")) {
-        			DataWrapper dw = (DataWrapper)intent.getSerializableExtra("interest");
-        			archivedItems = dw.getArray();
+        			ItemWrapper iw = (ItemWrapper)intent.getSerializableExtra("interest");
+        			archivedItems = iw.getArray();
         			
-        			DataWrapper dw_archive = (DataWrapper)intent.getSerializableExtra("others");
-        			toDoItems = dw_archive.getArray();
+        			ItemWrapper iw_archive = (ItemWrapper)intent.getSerializableExtra("others");
+        			toDoItems = iw_archive.getArray();
         		}
         	}
     	}	
@@ -149,6 +155,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	super.onStart();
     	    	
     }
+    
+    //General fragment structure derived from Android Developer website
+    //http://developer.android.com/training/implementing-navigation/lateral.html
 
     protected void onPause(){
     	//Is called whenever the activity becomes invisible.
@@ -284,22 +293,35 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        //Passes the ArrayList of items in a data wrapper 
 	        if (id == R.id.action_new) {
 	        	Intent newIntent = new Intent(getActivity(), NewItem.class);
-	        	newIntent.putExtra("items", new DataWrapper(toDoItems));
+	        	newIntent.putExtra("items", new ItemWrapper(toDoItems));
 	        	startActivity(newIntent);
 	            return true;
-	        } 
-	        //Prepares the activity to transition to the edit mode activity
-	        else if (id == R.id.action_edit){
-	        	Intent editIntent = new Intent(getActivity(),EditMode.class);
-	        	editIntent.putExtra("interest", new DataWrapper(toDoItems));
-	        	editIntent.putExtra("others", new DataWrapper(archivedItems));
-	        	editIntent.putExtra("View", "toDoList");
-	        	startActivity(editIntent);
 	        }
 	        
 	        else if (id == R.id.action_email){
 	        	Toast.makeText(getActivity(), "email", Toast.LENGTH_LONG).show();
 	        }
+	        
+	        //Prepares the activity to transition to the edit mode activity
+	        else if (id == R.id.action_edit){
+	        	Intent editIntent = new Intent(getActivity(),EditMode.class);
+	        	editIntent.putExtra("interest", new ItemWrapper(toDoItems));
+	        	editIntent.putExtra("others", new ItemWrapper(archivedItems));
+	        	editIntent.putExtra("View", "toDoList");
+	        	startActivity(editIntent);
+	        }
+	        
+	        else if (id == R.id.action_summary){
+	        	int complete = getComplete(toDoItems);
+	        	int incomplete = toDoItems.size() - complete;
+	        	int archived_complete = getComplete(archivedItems);
+	        	int archived_incomplete = archivedItems.size() - archived_complete;
+	        	
+	        	SummarizeFragment summarizeFragment = SummarizeFragment.newInstance(incomplete, complete,
+	        			archived_incomplete, archived_complete, toDoItems.size(), archivedItems.size());
+	        	summarizeFragment.show(getFragmentManager(),"archive");
+	        }
+	        
 			return super.onOptionsItemSelected(item);
 		}
 		
@@ -319,7 +341,19 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			return inflater.inflate(R.layout.fragment_main, container, false);
 		}
 		
+		public int getComplete(ArrayList<ToDoItem> items){
+			int size = 0;
+			for (int i = 0; i < items.size(); i++){
+				if (items.get(i).getCheckedOff()){
+					size++;
+				}
+			}
+			return size;
+		}
 	}
+	
+	//Same as above
+	//http://developer.android.com/training/implementing-navigation/lateral.html
 	
 	public static class ArchiveFragment extends ListFragment{
 		
@@ -356,10 +390,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        //Prepares the activity to transition to the edit mode activity
 	        else if (id == R.id.action_archive_edit){
 	        	Intent editIntent = new Intent(getActivity(),EditMode.class);
-	        	editIntent.putExtra("interest", new DataWrapper(archivedItems));
-	        	editIntent.putExtra("others", new DataWrapper(toDoItems));
+	        	editIntent.putExtra("interest", new ItemWrapper(archivedItems));
+	        	editIntent.putExtra("others", new ItemWrapper(toDoItems));
 	        	editIntent.putExtra("View", "archive");
 	        	startActivity(editIntent);
+	        	
+	        } else if (id == R.id.action_summary){
+	        	int complete = getComplete(toDoItems);
+	        	int incomplete = toDoItems.size() - complete;
+	        	int archived_complete = getComplete(archivedItems);
+	        	int archived_incomplete = archivedItems.size() - archived_complete;
+	        	
+	        	SummarizeFragment summarizeFragment = SummarizeFragment.newInstance(incomplete, complete, 
+	        			archived_incomplete, archived_complete, toDoItems.size(), archivedItems.size());
+	        	summarizeFragment.show(getFragmentManager(),"archive");
 	        }
 			return super.onOptionsItemSelected(item);
 		}
@@ -379,6 +423,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				
 			return inflater.inflate(R.layout.fragment_main, container, false);
 		}
+	
+		public int getComplete(ArrayList<ToDoItem> items){
+			int size = 0;
+			for (int i = 0; i < items.size(); i++){
+				if (items.get(i).getCheckedOff()){
+					size++;
+				}
+			}
+			return size;
+		}
 	}
 	
 	
@@ -393,7 +447,79 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
 	
 	
-	
+	public static class SummarizeFragment extends DialogFragment{
+		
+		private TextView total_tv;
+		private TextView complete_tv;
+		private TextView incomplete_tv;
+		private TextView archived_ttv;
+		private TextView archived_ctv;
+		private TextView archived_itv;
+		
+		
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState){
+			
+			int total = getArguments().getInt("total");
+			int incomplete = getArguments().getInt("incomplete");
+			int complete = getArguments().getInt("complete");
+			int archived_total = getArguments().getInt("archived_total");
+			int archived_incomplete = getArguments().getInt("archived_incomplete");
+			int archived_complete = getArguments().getInt("archived_complete");
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			View inflater = getActivity().getLayoutInflater().inflate(R.layout.summary_dialog, null);
+			
+			setCancelable(false);
+			
+			builder.setTitle("Summary of Items");
+			builder.setView(inflater).setNeutralButton("Okay", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
+			
+			total_tv = (TextView)inflater.findViewById(R.id.total);
+			total_tv.setText(total + " Total To Do items.");
+			
+			complete_tv = (TextView)inflater.findViewById(R.id.complete);
+			complete_tv.setText(complete + " Complete items.");
+			
+			incomplete_tv = (TextView)inflater.findViewById(R.id.incomplete);
+			incomplete_tv.setText(incomplete + " Incomplete items.");
+			
+			archived_ttv = (TextView) inflater.findViewById(R.id.archived_total);
+			archived_ttv.setText(archived_total + " Total archived items.");
+			
+			archived_ctv = (TextView)inflater.findViewById(R.id.archived_complete);
+			archived_ctv.setText(archived_complete + " Incomplete, archived items.");
+			
+			archived_itv = (TextView)inflater.findViewById(R.id.archived_incomplete);
+			archived_itv.setText(archived_incomplete + " Complete, archived items.");
+
+			return builder.create();
+		}
+		
+		
+		public static SummarizeFragment newInstance(int incomplete, int complete, int archived_incomplete, 
+				int archived_complete, int total, int archived_total){
+			SummarizeFragment summarizeFragment = new SummarizeFragment();
+			
+			Bundle args = new Bundle();
+			args.putInt("total", total);
+			args.putInt("incomplete", incomplete);
+			args.putInt("complete", complete);
+			args.putInt("archived_total", archived_total);
+			args.putInt("archived_incomplete", archived_incomplete);
+			args.putInt("archived_complete", archived_complete);
+			summarizeFragment.setArguments(args);
+			
+			return summarizeFragment;
+		}
+	}
 	
 	
 	

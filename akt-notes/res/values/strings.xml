@@ -10,10 +10,13 @@
     <string name="action_email">Email</string>
     <string name="action_archive">Archive</string>
     <string name="action_delete">Delete</string>
+    <string name="action_summary">Summary</string>
     <string name="hint_new_item">Add New Item</string>
     <string name="title_activity_edit_mode">EditMode</string>
     <string name="dialog_confirm">Confirm</string>
     <string name="dialog_cancel">Cancel</string>
-    
-</resources>
+    <string name="title_activity_email">EmailActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
 
+</resources>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    
+    <TextView android:id="@+id/total"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal" 
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:padding="2dp" />
+    
+	<TextView android:id="@+id/complete"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_horizontal" 
+	    android:textSize="15sp"
+	    android:padding="2dp" />
+	
+	<TextView android:id="@+id/incomplete"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_horizontal"
+	    android:textSize="15sp"
+	    android:padding="2dp" />
+	
+	<TextView android:id="@+id/archived_total"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_horizontal" 
+	    android:textSize="20sp"
+	    android:textStyle="bold"
+	    android:padding="2dp" />
+	
+	<TextView android:id="@+id/archived_complete"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_horizontal" 
+	    android:textSize="15sp"
+	    android:padding="2dp" />
+	
+	<TextView android:id="@+id/archived_incomplete"
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center_horizontal"
+	    android:textSize="15sp"
+	    android:padding="2dp" />
+    
+    
+</LinearLayout>
