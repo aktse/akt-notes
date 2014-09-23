@@ -19,7 +19,7 @@ public class ArchivedArrayAdapter extends ArrayAdapter<ToDoItem> {
 	public ArchivedArrayAdapter(Context context, ArrayList<ToDoItem> archivedItems){
 		super(context, R.layout.list_item, archivedItems);
 		
-		//this.archivedItems = archivedItems;
+		this.archivedItems = archivedItems;
 	}
 
 	//Used to get the item located at the position of the onClick event

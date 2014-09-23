@@ -12,6 +12,8 @@
     <string name="action_delete">Delete</string>
     <string name="hint_new_item">Add New Item</string>
     <string name="title_activity_edit_mode">EditMode</string>
+    <string name="dialog_confirm">Confirm</string>
+    <string name="dialog_cancel">Cancel</string>
     
 </resources>
 

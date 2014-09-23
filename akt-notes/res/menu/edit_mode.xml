@@ -15,12 +15,5 @@
         android:showAsAction="ifRoom"
         android:title="@string/action_archive" 
         android:icon="@drawable/ic_action_archive" />
-    
-    <item
-        android:id="@+id/action_email"
-        android:orderInCategory="3"
-        android:showAsAction="ifRoom"
-        android:title="@string/action_email"
-        android:icon="@drawable/ic_action_email" />
 
 </menu>

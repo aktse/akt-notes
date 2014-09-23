@@ -30,10 +30,11 @@ public final class R {
         public static final int ic_launcher=0x7f020005;
     }
     public static final class id {
-        public static final int action_archive=0x7f08000a;
-        public static final int action_delete=0x7f080009;
-        public static final int action_edit=0x7f080008;
-        public static final int action_email=0x7f08000b;
+        public static final int action_archive=0x7f08000b;
+        public static final int action_archive_edit=0x7f080008;
+        public static final int action_delete=0x7f08000a;
+        public static final int action_edit=0x7f08000d;
+        public static final int action_email=0x7f080009;
         public static final int action_new=0x7f08000c;
         public static final int checkBox=0x7f080007;
         public static final int container=0x7f080005;
@@ -66,6 +67,8 @@ public final class R {
         public static final int action_email=0x7f050006;
         public static final int action_new=0x7f050004;
         public static final int app_name=0x7f050000;
+        public static final int dialog_cancel=0x7f05000c;
+        public static final int dialog_confirm=0x7f05000b;
         public static final int hint_new_item=0x7f050009;
         public static final int title_activity_edit_mode=0x7f05000a;
         public static final int title_activity_new_item=0x7f050001;

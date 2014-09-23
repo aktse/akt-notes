@@ -50,4 +50,17 @@ public class ToDoItem implements Serializable {
 	public void toggleSelected(){
 		this.selected = !this.selected;
 	}
+	
+	public void setSelected(){
+		this.selected = false;
+	}
+	
+	public boolean isEqualTo(ToDoItem toDoItem){
+		boolean isEqualTo = false;
+		
+		if (this.toDoItem.equals(toDoItem.getToDoItem())){
+			isEqualTo = true;
+		}
+		return isEqualTo;
+	}
 }

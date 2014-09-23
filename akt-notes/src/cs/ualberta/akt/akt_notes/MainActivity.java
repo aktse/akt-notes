@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 
@@ -124,10 +125,24 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	if (uniqueID.equals("newItem")){
         		DataWrapper dw = (DataWrapper)intent.getSerializableExtra("items");
             	toDoItems = dw.getArray();
-        	}	
- 		
-    	}
-    	
+        	} else if (uniqueID.equals("editItem")){
+        		String viewFrom = intent.getStringExtra("View");
+        		if (viewFrom.equals("toDoList")){
+        			DataWrapper dw = (DataWrapper)intent.getSerializableExtra("interest");
+        			toDoItems = dw.getArray();
+        		
+        			DataWrapper dw_archive = (DataWrapper)intent.getSerializableExtra("others");
+        			archivedItems = dw_archive.getArray();
+        			
+        		} else if (viewFrom.equals("archive")) {
+        			DataWrapper dw = (DataWrapper)intent.getSerializableExtra("interest");
+        			archivedItems = dw.getArray();
+        			
+        			DataWrapper dw_archive = (DataWrapper)intent.getSerializableExtra("others");
+        			toDoItems = dw_archive.getArray();
+        		}
+        	}
+    	}	
     }
 
     protected void onStart(){
@@ -175,7 +190,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        //getMenuInflater().inflate(R.menu.to_do_list, menu);
         return true;
     }
     
@@ -183,40 +197,26 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	invalidateOptionsMenu();
     }
 
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        
-        //Prepares the activity to transition to the add new item activity
-        //Passes the ArrayList of items in a data wrapper 
-        if (id == R.id.action_new) {
-        	Intent newIntent = new Intent(this, NewItem.class);
-        	newIntent.putExtra("items", new DataWrapper(toDoItems));
-        	startActivity(newIntent);
-            return true;
-        } 
-        //Prepares the activity to transition to the edit mode activity
-        else if (id == R.id.action_edit){
-        	Intent editIntent = new Intent(this,EditMode.class);
-        	editIntent.putExtra("items", new DataWrapper(toDoItems));
-        	startActivity(editIntent);
-        }
         return super.onOptionsItemSelected(item);
     }
+    
 
 	@Override
 	public void onTabSelected(Tab tab, FragmentTransaction ft) {
 			viewPager.setCurrentItem(tab.getPosition());
 	}
+	
 
 	@Override
 	public void onTabUnselected(Tab tab, FragmentTransaction ft) {
 		// TODO Auto-generated method stub
 		
 	}
+	
 
 	@Override
 	public void onTabReselected(Tab tab, FragmentTransaction ft) {
@@ -277,6 +277,33 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 		
 		@Override
+		public boolean onOptionsItemSelected(MenuItem item){ 
+	        int id = item.getItemId();
+	        
+	        //Prepares the activity to transition to the add new item activity
+	        //Passes the ArrayList of items in a data wrapper 
+	        if (id == R.id.action_new) {
+	        	Intent newIntent = new Intent(getActivity(), NewItem.class);
+	        	newIntent.putExtra("items", new DataWrapper(toDoItems));
+	        	startActivity(newIntent);
+	            return true;
+	        } 
+	        //Prepares the activity to transition to the edit mode activity
+	        else if (id == R.id.action_edit){
+	        	Intent editIntent = new Intent(getActivity(),EditMode.class);
+	        	editIntent.putExtra("interest", new DataWrapper(toDoItems));
+	        	editIntent.putExtra("others", new DataWrapper(archivedItems));
+	        	editIntent.putExtra("View", "toDoList");
+	        	startActivity(editIntent);
+	        }
+	        
+	        else if (id == R.id.action_email){
+	        	Toast.makeText(getActivity(), "email", Toast.LENGTH_LONG).show();
+	        }
+			return super.onOptionsItemSelected(item);
+		}
+		
+		@Override
 		public void onCreate(Bundle savedInstanceState){
 			super.onCreate(savedInstanceState);
 			setHasOptionsMenu(true);
@@ -311,6 +338,30 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		public void onCreateOptionsMenu(Menu menu, MenuInflater inflater){
 			inflater.inflate(R.menu.archive_list, menu);
 			super.onCreateOptionsMenu(menu, inflater);
+		}
+		
+		@Override
+		public boolean onOptionsItemSelected(MenuItem item){ 
+	        int id = item.getItemId();
+	        
+	        //Prepares the activity to transition to the add new item activity
+	        //Passes the ArrayList of items in a data wrapper 
+	        if (id == R.id.action_email) {
+	        	//Intent newIntent = new Intent(getActivity(), NewItem.class);
+	        	//newIntent.putExtra("items", new DataWrapper(toDoItems));
+	        	//startActivity(newIntent);
+	        	Toast.makeText(getActivity(),"action_email",Toast.LENGTH_LONG).show();
+	            return true;
+	        } 
+	        //Prepares the activity to transition to the edit mode activity
+	        else if (id == R.id.action_archive_edit){
+	        	Intent editIntent = new Intent(getActivity(),EditMode.class);
+	        	editIntent.putExtra("interest", new DataWrapper(archivedItems));
+	        	editIntent.putExtra("others", new DataWrapper(toDoItems));
+	        	editIntent.putExtra("View", "archive");
+	        	startActivity(editIntent);
+	        }
+			return super.onOptionsItemSelected(item);
 		}
 		
 		@Override
