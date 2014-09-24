@@ -15,10 +15,10 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
-public class EditModeCustomArrayAdapter extends ArrayAdapter<ToDoItem> {
-	private ArrayList<ToDoItem> itemsOfInterest = null;
+public class SelectingCustomArrayAdapter extends ArrayAdapter<ToDoItem> {
+	private ArrayList<ToDoItem> itemsOfInterest;
 	
-	public EditModeCustomArrayAdapter(Context context, ArrayList<ToDoItem> itemsOfInterest) {
+	public SelectingCustomArrayAdapter(Context context, ArrayList<ToDoItem> itemsOfInterest) {
 		super(context,R.layout.edit_list_item, itemsOfInterest);
 		
 		this.itemsOfInterest = itemsOfInterest;

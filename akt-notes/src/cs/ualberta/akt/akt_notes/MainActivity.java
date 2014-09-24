@@ -7,7 +7,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
-import cs.ualberta.akt.akt_notes.adapters.ArchivedArrayAdapter;
 import cs.ualberta.akt.akt_notes.adapters.CustomArrayAdapter;
 
 import android.app.ActionBar.Tab;
@@ -33,7 +32,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener{
 	
@@ -60,6 +58,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         
         actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(false);
+        actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         
         for (String title : titles) {
@@ -146,6 +145,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         			
         			ItemWrapper iw_archive = (ItemWrapper)intent.getSerializableExtra("others");
         			toDoItems = iw_archive.getArray();
+        			
+        			viewPager.setCurrentItem(1);
         		}
         	}
     	}	
@@ -155,9 +156,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	super.onStart();
     	    	
     }
-    
-    //General fragment structure derived from Android Developer website
-    //http://developer.android.com/training/implementing-navigation/lateral.html
+
 
     protected void onPause(){
     	//Is called whenever the activity becomes invisible.
@@ -233,6 +232,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		
 	}
 	
+	
 	public class TabsPagerAdapter extends FragmentPagerAdapter{
 
 		public TabsPagerAdapter(FragmentManager fm) {
@@ -263,9 +263,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			return 2;
 		}
 		
-		
 	}
 	
+    
+    //General fragment structure derived from Android Developer website
+    //http://developer.android.com/training/implementing-navigation/lateral.html
 	public static class ToDoListFragment extends ListFragment{
 		
 		public CustomArrayAdapter toDoItemsViewAdapter = null;
@@ -299,7 +301,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        }
 	        
 	        else if (id == R.id.action_email){
-	        	Toast.makeText(getActivity(), "email", Toast.LENGTH_LONG).show();
+	        	Intent emailIntent = new Intent(getActivity(), EmailActivity.class);
+	        	emailIntent.putExtra("items", new ItemWrapper(toDoItems));
+	        	emailIntent.putExtra("archived", new ItemWrapper(archivedItems));
+	        	startActivity(emailIntent);
 	        }
 	        
 	        //Prepares the activity to transition to the edit mode activity
@@ -357,7 +362,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
 	public static class ArchiveFragment extends ListFragment{
 		
-		public ArchivedArrayAdapter archivedItemsViewAdapter = null;
+		public CustomArrayAdapter archivedItemsViewAdapter = null;
 		
 		@Override
 		public void onListItemClick(ListView l, View v, int position, long i){
@@ -381,10 +386,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        //Prepares the activity to transition to the add new item activity
 	        //Passes the ArrayList of items in a data wrapper 
 	        if (id == R.id.action_email) {
-	        	//Intent newIntent = new Intent(getActivity(), NewItem.class);
-	        	//newIntent.putExtra("items", new DataWrapper(toDoItems));
-	        	//startActivity(newIntent);
-	        	Toast.makeText(getActivity(),"action_email",Toast.LENGTH_LONG).show();
+	        	Intent emailIntent = new Intent(getActivity(), EmailActivity.class);
+	        	emailIntent.putExtra("items", new ItemWrapper(toDoItems));
+	        	emailIntent.putExtra("archived", new ItemWrapper(archivedItems));
+	        	startActivity(emailIntent);
 	            return true;
 	        } 
 	        //Prepares the activity to transition to the edit mode activity
@@ -417,7 +422,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancedState) {
 			
-			this.archivedItemsViewAdapter = new ArchivedArrayAdapter(getActivity(), archivedItems);
+			this.archivedItemsViewAdapter = new CustomArrayAdapter(getActivity(), archivedItems);
 			setListAdapter(archivedItemsViewAdapter);
 			archivedItemsViewAdapter.notifyDataSetChanged();
 				
@@ -483,22 +488,22 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 				});
 			
 			total_tv = (TextView)inflater.findViewById(R.id.total);
-			total_tv.setText(total + " Total To Do items.");
+			total_tv.setText(total + " Total To Do Items.");
 			
 			complete_tv = (TextView)inflater.findViewById(R.id.complete);
-			complete_tv.setText(complete + " Complete items.");
+			complete_tv.setText(complete + " Complete");
 			
 			incomplete_tv = (TextView)inflater.findViewById(R.id.incomplete);
-			incomplete_tv.setText(incomplete + " Incomplete items.");
+			incomplete_tv.setText(incomplete + " Incomplete");
 			
 			archived_ttv = (TextView) inflater.findViewById(R.id.archived_total);
-			archived_ttv.setText(archived_total + " Total archived items.");
+			archived_ttv.setText(archived_total + " Total Archived Items.");
 			
 			archived_ctv = (TextView)inflater.findViewById(R.id.archived_complete);
-			archived_ctv.setText(archived_complete + " Incomplete, archived items.");
+			archived_ctv.setText(archived_complete + " Complete");
 			
 			archived_itv = (TextView)inflater.findViewById(R.id.archived_incomplete);
-			archived_itv.setText(archived_incomplete + " Complete, archived items.");
+			archived_itv.setText(archived_incomplete + " Incomplete");
 
 			return builder.create();
 		}
@@ -520,11 +525,5 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			return summarizeFragment;
 		}
 	}
-	
-	
-	
-	
-	
-	
 	
 }

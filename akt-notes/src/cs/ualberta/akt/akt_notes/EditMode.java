@@ -2,8 +2,9 @@ package cs.ualberta.akt.akt_notes;
 
 import java.util.ArrayList;
 
-import cs.ualberta.akt.akt_notes.adapters.EditModeCustomArrayAdapter;
+import cs.ualberta.akt.akt_notes.adapters.SelectingCustomArrayAdapter;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -32,6 +33,11 @@ public class EditMode extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit_mode);
+		
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayShowHomeEnabled(false);
+		actionBar.setTitle("Edit Items");
+		
         itemList = (ListView) findViewById(R.id.editList);
         
     	//Gets the ArrayList of items populating the current view passed from MainActivity
@@ -40,14 +46,14 @@ public class EditMode extends FragmentActivity {
     	itemsOfInterest = transfer;
     	
     	//Gets the ArrayList of items not populating the current view
-    	ItemWrapper iw_archive = (ItemWrapper)getIntent().getSerializableExtra("others");
-    	otherItems = iw_archive.getArray();
+    	ItemWrapper iw_others = (ItemWrapper)getIntent().getSerializableExtra("others");
+    	otherItems = iw_others.getArray();
     	
     	//Gets the view that called EditMode
     	viewFrom = getIntent().getStringExtra("View");
 
     	//Assigns EditModeCustomArrayAdapter to ListView + displays ArrayList of items
-    	final EditModeCustomArrayAdapter toDoItemsViewAdapter = new EditModeCustomArrayAdapter(this, itemsOfInterest);
+    	final SelectingCustomArrayAdapter toDoItemsViewAdapter = new SelectingCustomArrayAdapter(this, itemsOfInterest);
     	itemList.setAdapter(toDoItemsViewAdapter);
     	
     	//Assigns ItemClickListener to ListView to toggle check box on row click
@@ -94,8 +100,13 @@ public class EditMode extends FragmentActivity {
 			if (selected.isEmpty()){
 				Toast.makeText(this, "No items have been selected", Toast.LENGTH_SHORT).show();
 			} else {
-				ConfirmationFragment confirmationFragment = ConfirmationFragment.newInstance(selected.size() + " item(s) to be archived", "action_archive");
-				confirmationFragment.show(getSupportFragmentManager(), "archive");
+				if (viewFrom.equals("toDoList")) {
+					ConfirmationFragment confirmationFragment = ConfirmationFragment.newInstance(selected.size() + " item(s) to be archived", "action_archive");
+					confirmationFragment.show(getSupportFragmentManager(), "archive");
+				} else {
+					ConfirmationFragment confirmationFragment = ConfirmationFragment.newInstance(selected.size() + " item(s) to be unarchived", "action_archive");
+					confirmationFragment.show(getSupportFragmentManager(), "archive");
+				}
 			}
 			
 			return true;
@@ -104,8 +115,6 @@ public class EditMode extends FragmentActivity {
 	}
 	
 	//When "confirm" is clicked on dialogBox, performs an action based on which button is clicked
-	//Code derived from Android Developer website
-	//http://developer.android.com/guide/topics/ui/dialogs.html
 	public void doPositiveClick(String dialogID){
 		if (dialogID.equals("action_delete")){
 			for (int i = 0; i < selected.size(); i++){
@@ -129,6 +138,7 @@ public class EditMode extends FragmentActivity {
 		archiveIntent.putExtra("interest", new ItemWrapper(transfer));
 		archiveIntent.putExtra("others", new ItemWrapper(otherItems));
 		startActivity(archiveIntent);
+		finish();
 	}
 	
 	public void doNegativeClick(){

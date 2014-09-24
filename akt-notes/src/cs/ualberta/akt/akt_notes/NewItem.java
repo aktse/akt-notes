@@ -3,17 +3,18 @@ package cs.ualberta.akt.akt_notes;
 import java.util.ArrayList;
 
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnKeyListener;
 import android.widget.EditText;
 
 public class NewItem extends Activity {
-
-	public final static String EXTRA_MESSAGE = "cs.ualberta.akt.akt_notes.newItem";	
-		
+	
 	private ArrayList<ToDoItem> toDoItems;
 	
 	
@@ -21,6 +22,11 @@ public class NewItem extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_new_item);
+		
+		ActionBar actionBar = getActionBar();
+		actionBar.setDisplayShowHomeEnabled(false);
+		actionBar.setTitle("New Item");
+		
 	}
 
     protected void onStart(){
@@ -54,5 +60,6 @@ public class NewItem extends Activity {
 		addIntent.putExtra("uniqueID", "newItem"); //Identifier used to identify the different intents
 		addIntent.putExtra("items", new ItemWrapper(toDoItems)); //ArrayList wrapped in an object
 		startActivity(addIntent);
+		finish();
 	}
 }

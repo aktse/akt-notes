@@ -15,18 +15,18 @@ import android.widget.CheckBox;
 
 public class CustomArrayAdapter extends ArrayAdapter<ToDoItem> {
 	
-	private ArrayList<ToDoItem> toDoItems = null;
+	private ArrayList<ToDoItem> itemsOfInterest = null;
 	
-	public CustomArrayAdapter(Context context, ArrayList<ToDoItem> toDoItems) {
-		super(context,R.layout.list_item, toDoItems);
+	public CustomArrayAdapter(Context context, ArrayList<ToDoItem> itemsOfInterest) {
+		super(context,R.layout.list_item, itemsOfInterest);
 		
-		this.toDoItems = toDoItems;
+		this.itemsOfInterest = itemsOfInterest;
 	}
 	
 	//Used to get the item located at the position of the onClick event
 	@Override
 	public ToDoItem getItem(int position) {
-		return toDoItems.get(position);
+		return itemsOfInterest.get(position);
 	}
 	
 	//Used to create ListView of items with a check box 
@@ -44,8 +44,8 @@ public class CustomArrayAdapter extends ArrayAdapter<ToDoItem> {
 		CheckBox checkBox = (CheckBox) view.findViewById(R.id.checkBox);
 		
 		//Checks to see how to display check boxes
-		item.setText(toDoItems.get(position).getToDoItem());
-		if (toDoItems.get(position).getCheckedOff() == true) {
+		item.setText(itemsOfInterest.get(position).getToDoItem());
+		if (itemsOfInterest.get(position).getCheckedOff() == true) {
 			checkBox.setChecked(true);
 		} else {
 			checkBox.setChecked(false);
