@@ -19,11 +19,16 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+//Activity used to send an email
+//User can select any number of items > 0 and then email them
+//Implements a DialogFragment to confirm user selection
+//Contains both the active "To Do" items as well as the archived ones separated with a <TextView>
+//selected is used to keep track of which items the user has selected
+
 public class EmailActivity extends FragmentActivity {
 	
 	private ArrayList<ToDoItem> toDoItems;
 	private ArrayList<ToDoItem> archivedItems;
-	private ArrayList<ToDoItem> transfer;
 	private ArrayList<ToDoItem> selected = new ArrayList<ToDoItem>();
 	
 	private ListView itemList;
@@ -38,21 +43,15 @@ public class EmailActivity extends FragmentActivity {
 		actionBar.setDisplayShowHomeEnabled(false);
 		actionBar.setTitle("Email Items");
 		
+		//Acquires the ListViews to display the items
 		itemList = (ListView) findViewById(R.id.email_item);
 		archivedList = (ListView) findViewById(R.id.email_archive);
 		
+		//ArrayList of active "To Do" items
 		ItemWrapper iw = (ItemWrapper)getIntent().getSerializableExtra("items");
-		transfer = iw.getArray();
-		toDoItems = transfer;
-		
-		ItemWrapper iw_archive = (ItemWrapper)getIntent().getSerializableExtra("archived");
-		archivedItems = iw_archive.getArray();
-		
+		toDoItems = iw.getArray();		
 		final SelectingCustomArrayAdapter toDoItemsViewAdapter = new SelectingCustomArrayAdapter(this, toDoItems);
 		itemList.setAdapter(toDoItemsViewAdapter);
-		
-		final SelectingCustomArrayAdapter archivedItemsViewAdapter = new SelectingCustomArrayAdapter(this, archivedItems);
-		archivedList.setAdapter(archivedItemsViewAdapter);
 		
     	//Assigns ItemClickListener to ListView to toggle check box on row click
     	itemList.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
@@ -68,6 +67,12 @@ public class EmailActivity extends FragmentActivity {
 				toDoItemsViewAdapter.notifyDataSetChanged();
 			}
     	});
+		
+		//ArrayList of archived "To Do" items
+		ItemWrapper iw_archive = (ItemWrapper)getIntent().getSerializableExtra("archived");
+		archivedItems = iw_archive.getArray();
+		final SelectingCustomArrayAdapter archivedItemsViewAdapter = new SelectingCustomArrayAdapter(this, archivedItems);
+		archivedList.setAdapter(archivedItemsViewAdapter);
     	
     	//Assigns ItemClickListener to ListView to toggle check box on row click
     	archivedList.setOnItemClickListener(new android.widget.AdapterView.OnItemClickListener() {
@@ -94,14 +99,16 @@ public class EmailActivity extends FragmentActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
+		
 		int id = item.getItemId();
+		
+		//Only button, allows user to confirm his selection
 		if (id == R.id.action_done_email) {
 			if (selected.isEmpty()){
 				Toast.makeText(this, "No items have been selected", Toast.LENGTH_SHORT).show();
-			} else {
+			} 
+			//Creates a DialogFragment to confirm selection before initializing Intent
+			else {
 				ConfirmationFragment confirmationFragment = ConfirmationFragment.newInstance(selected.size() + " item(s) to be emailed");
 				confirmationFragment.show(getSupportFragmentManager(),"email");
 			}
@@ -109,8 +116,10 @@ public class EmailActivity extends FragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	
+	//Called when user confirms selection for emailing
 	public void doPositiveClick(){
+		
+		//Constructs body message
 		String emailContents = "Here are your items: \n\n";
 		int j = 1;
 		for (int i = 0; i < selected.size(); i++){
@@ -118,10 +127,12 @@ public class EmailActivity extends FragmentActivity {
 			j++;
 		}
 		
+		//StackOverflow was referenced in developing this section of code
+		//http://stackoverflow.com/questions/2197741/how-can-i-send-emails-from-my-android-application
 		Intent emailIntent = new Intent(Intent.ACTION_SEND);
 		emailIntent.setType("message/rfc822");
 		emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Your To Do Items");
-		emailIntent.putExtra(Intent.EXTRA_TEXT   , emailContents);
+		emailIntent.putExtra(Intent.EXTRA_TEXT, emailContents);
 		try {
 		    startActivity(Intent.createChooser(emailIntent, "Sending mail"));
 		    finish();
@@ -131,11 +142,11 @@ public class EmailActivity extends FragmentActivity {
 	}
 	
 	public void doNegativeClick(){
-		
+		//User clicked cancel
 	}
 	
-	//DialogFragment
-	//Code derived from Android Developer website
+	//Displays a DialogFragment to confirm the selection with user
+	//Android Developer web site was referenced in developing this section of code
 	//http://developer.android.com/guide/topics/ui/dialogs.html
 	public static class ConfirmationFragment extends DialogFragment {
 	    
@@ -158,10 +169,10 @@ public class EmailActivity extends FragmentActivity {
 	                	   ((EmailActivity)getActivity()).doNegativeClick();
 	                   }
 	               });
-	        // Create the AlertDialog object and return it
 	        return builder.create();
 		}
 		
+		//Called to create new instance to allow for passing of dynamically generated message
 		public static ConfirmationFragment newInstance(String displayMessage){
 			ConfirmationFragment confirmationFragment = new ConfirmationFragment();
 			

@@ -13,10 +13,11 @@ import android.view.View;
 import android.view.View.OnKeyListener;
 import android.widget.EditText;
 
+//Activity used to handle the addition of new "To Do" items
+
 public class NewItem extends Activity {
 	
 	private ArrayList<ToDoItem> toDoItems;
-	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +31,8 @@ public class NewItem extends Activity {
 	}
 
     protected void onStart(){
-    	super.onStart();	
+    	super.onStart();
+    	
     	//Gets the ArrayList passed from MainActivity
     	ItemWrapper iw = (ItemWrapper)getIntent().getSerializableExtra("items");
     	toDoItems = iw.getArray();

@@ -33,6 +33,14 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+//MainActivity contains the bulk of the logic
+//Contains 2 separate ArrayLists, 1 for active items and 1 for archived items
+//Implementation of a swipe view with tabs
+//Each ArrayList has its own ListFragment with its own action bar options
+//Implements a DialogFragment to summarize number of archived/unarchived items and whether they are checked off or not
+//onCreate implements loading from file -> may generate error on first load because file doesn't exist but it doesn't happen every time
+//onPause implements saving to file because it will be called no matter what if the app is closed
+
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener{
 	
 	private static ArrayList<ToDoItem> toDoItems;
@@ -50,7 +58,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         setContentView(R.layout.activity_main);
         
         //Swipe views using tabs
-        //Code derived from Android Developer website
+        //Android Developer web site was referenced in developing this section of code
         //http://developer.android.com/training/implementing-navigation/lateral.html
         viewPager = (ViewPager) findViewById(R.id.pager);
         tabsPagerAdapter = new TabsPagerAdapter(getSupportFragmentManager());
@@ -65,6 +73,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	actionBar.addTab(actionBar.newTab().setText(title).setTabListener(this));
         }
         
+        //Handles changing of pages on manual click
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			
 			@Override
@@ -85,7 +94,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		});
         
     	Intent intent = this.getIntent();
-    	//If this activity was called for the first time (i.e launch) attempts to load data from internal storage
+    	
+    	//If this activity was called for the first time (i.e launch), will attempt to load data from internal storage
     	if (intent.getType() == null){
     		toDoItems = new ArrayList<ToDoItem>();
     		archivedItems = new ArrayList<ToDoItem>();
@@ -99,7 +109,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         	//Creates a file in the directory if file doesn't already exist
         	File myItems = new File(file, "myItems.txt");
         	File myFile = new File(file, "archivedItems.txt");
-        	//Loads the object ArrayList
+        	//Loads active objects into ArrayList
     		try {
     			FileInputStream fin = new FileInputStream(myItems);
     			ObjectInputStream oin = new ObjectInputStream(fin);
@@ -110,6 +120,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     			e.printStackTrace();
     		}
     		
+    		//Loads archived objects into ArrayList
     		try {
     			FileInputStream fin = new FileInputStream(myFile);
     			ObjectInputStream oin = new ObjectInputStream(fin);
@@ -146,15 +157,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         			ItemWrapper iw_archive = (ItemWrapper)intent.getSerializableExtra("others");
         			toDoItems = iw_archive.getArray();
         			
-        			viewPager.setCurrentItem(1);
+        			viewPager.setCurrentItem(1); //Used to return back to Archive screen
         		}
         	}
     	}	
-    }
-
-    protected void onStart(){
-    	super.onStart();
-    	    	
     }
 
 
@@ -173,7 +179,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     	File myItems = new File(file, "myItems.txt");
     	File myFile = new File(file, "archivedItems.txt");
     	
-    	//Saves the array to internal storage
+    	//Saves active items ArrayList to internal storage
     	try {
 			FileOutputStream fout = new FileOutputStream(myItems);
 			ObjectOutputStream oout = new ObjectOutputStream(fout);
@@ -184,6 +190,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			e.printStackTrace();
 		}
     	
+    	//Saves archived items ArrayList to internal storage
     	try {
     		FileOutputStream fout = new FileOutputStream(myFile);
     		ObjectOutputStream oout = new ObjectOutputStream(fout);
@@ -233,6 +240,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	}
 	
 	
+	//Class that handles creation of fragments and assigning them to the tab being selected
 	public class TabsPagerAdapter extends FragmentPagerAdapter{
 
 		public TabsPagerAdapter(FragmentManager fm) {
@@ -265,13 +273,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		
 	}
 	
-    
-    //General fragment structure derived from Android Developer website
+    //Fragment used to display toDoItems ArrayList
+	//Implements its own options in ActionBar and handles onClick events
+    //Android Developer web site was referenced in developing this section of code
     //http://developer.android.com/training/implementing-navigation/lateral.html
 	public static class ToDoListFragment extends ListFragment{
 		
 		public CustomArrayAdapter toDoItemsViewAdapter = null;
 		
+		//Handles displaying items with a check box
 		@Override
 		public void onListItemClick(ListView l, View v, int position, long i){
 			
@@ -291,24 +301,19 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		public boolean onOptionsItemSelected(MenuItem item){ 
 	        int id = item.getItemId();
 	        
-	        //Prepares the activity to transition to the add new item activity
+	        //Prepares the activity to transition to activity specified by button pressed
 	        //Passes the ArrayList of items in a data wrapper 
 	        if (id == R.id.action_new) {
 	        	Intent newIntent = new Intent(getActivity(), NewItem.class);
 	        	newIntent.putExtra("items", new ItemWrapper(toDoItems));
 	        	startActivity(newIntent);
 	            return true;
-	        }
-	        
-	        else if (id == R.id.action_email){
+	        } else if (id == R.id.action_email){
 	        	Intent emailIntent = new Intent(getActivity(), EmailActivity.class);
 	        	emailIntent.putExtra("items", new ItemWrapper(toDoItems));
 	        	emailIntent.putExtra("archived", new ItemWrapper(archivedItems));
 	        	startActivity(emailIntent);
-	        }
-	        
-	        //Prepares the activity to transition to the edit mode activity
-	        else if (id == R.id.action_edit){
+	        } else if (id == R.id.action_edit){
 	        	Intent editIntent = new Intent(getActivity(),EditMode.class);
 	        	editIntent.putExtra("interest", new ItemWrapper(toDoItems));
 	        	editIntent.putExtra("others", new ItemWrapper(archivedItems));
@@ -316,6 +321,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        	startActivity(editIntent);
 	        }
 	        
+	        //Creates a DialogFragment to display a summary of the number of items the user has
 	        else if (id == R.id.action_summary){
 	        	int complete = getComplete(toDoItems);
 	        	int incomplete = toDoItems.size() - complete;
@@ -346,6 +352,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			return inflater.inflate(R.layout.fragment_main, container, false);
 		}
 		
+		//Used to calculate the number of checked off items
 		public int getComplete(ArrayList<ToDoItem> items){
 			int size = 0;
 			for (int i = 0; i < items.size(); i++){
@@ -357,13 +364,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 	
-	//Same as above
+	//Nearly identical to above fragment, contains 1 less menu option
+	//Android Developer web site was referenced in developing this section of code
 	//http://developer.android.com/training/implementing-navigation/lateral.html
 	
 	public static class ArchiveFragment extends ListFragment{
 		
 		public CustomArrayAdapter archivedItemsViewAdapter = null;
 		
+		//Handles displaying items with a check box
 		@Override
 		public void onListItemClick(ListView l, View v, int position, long i){
 			
@@ -383,7 +392,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		public boolean onOptionsItemSelected(MenuItem item){ 
 	        int id = item.getItemId();
 	        
-	        //Prepares the activity to transition to the add new item activity
+	        //Prepares the activity to transition to activity specified by button pressed
 	        //Passes the ArrayList of items in a data wrapper 
 	        if (id == R.id.action_email) {
 	        	Intent emailIntent = new Intent(getActivity(), EmailActivity.class);
@@ -391,16 +400,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	        	emailIntent.putExtra("archived", new ItemWrapper(archivedItems));
 	        	startActivity(emailIntent);
 	            return true;
-	        } 
-	        //Prepares the activity to transition to the edit mode activity
-	        else if (id == R.id.action_archive_edit){
+	        } else if (id == R.id.action_archive_edit){
 	        	Intent editIntent = new Intent(getActivity(),EditMode.class);
 	        	editIntent.putExtra("interest", new ItemWrapper(archivedItems));
 	        	editIntent.putExtra("others", new ItemWrapper(toDoItems));
 	        	editIntent.putExtra("View", "archive");
 	        	startActivity(editIntent);
-	        	
-	        } else if (id == R.id.action_summary){
+	        } 
+	        //Creates a DialogFragment to display a summary of the number of items the user has
+	        else if (id == R.id.action_summary){
 	        	int complete = getComplete(toDoItems);
 	        	int incomplete = toDoItems.size() - complete;
 	        	int archived_complete = getComplete(archivedItems);
@@ -422,6 +430,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstancedState) {
 			
+	    	//Assigns CustomArrayAdapter to ListView
 			this.archivedItemsViewAdapter = new CustomArrayAdapter(getActivity(), archivedItems);
 			setListAdapter(archivedItemsViewAdapter);
 			archivedItemsViewAdapter.notifyDataSetChanged();
@@ -429,6 +438,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			return inflater.inflate(R.layout.fragment_main, container, false);
 		}
 	
+		//Used to calculate the number of checked off items
 		public int getComplete(ArrayList<ToDoItem> items){
 			int size = 0;
 			for (int i = 0; i < items.size(); i++){
@@ -452,6 +462,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
 	
 	
+	//DialogFragment for creating a pop-up to summarize number of archived/unarchived items
 	public static class SummarizeFragment extends DialogFragment{
 		
 		private TextView total_tv;
@@ -487,6 +498,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					}
 				});
 			
+			//Sets number of items in the TextViews of layout
 			total_tv = (TextView)inflater.findViewById(R.id.total);
 			total_tv.setText(total + " Total To Do Items.");
 			
@@ -508,7 +520,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			return builder.create();
 		}
 		
-		
+		//Used to pass the number of items to fragment
 		public static SummarizeFragment newInstance(int incomplete, int complete, int archived_incomplete, 
 				int archived_complete, int total, int archived_total){
 			SummarizeFragment summarizeFragment = new SummarizeFragment();

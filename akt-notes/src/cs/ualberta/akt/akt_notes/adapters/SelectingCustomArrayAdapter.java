@@ -15,9 +15,14 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+//This class is used to display the ArrayList objects in EditMode and EmailActivity.
+//Nearly identical to CustomArrayAdapter but uses a different layout xml so user can see a visual difference
+
 public class SelectingCustomArrayAdapter extends ArrayAdapter<ToDoItem> {
+	
 	private ArrayList<ToDoItem> itemsOfInterest;
 	
+	//Initializes the adapter with the ArrayList we wish to display in a specific ListView
 	public SelectingCustomArrayAdapter(Context context, ArrayList<ToDoItem> itemsOfInterest) {
 		super(context,R.layout.edit_list_item, itemsOfInterest);
 		

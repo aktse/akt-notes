@@ -19,6 +19,17 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+//Activity designated to archiving/unarchiving and deleting of "To Do" items
+//User can select any number of items > 0 and delete or archive/unarchive the selected items
+//Implements a DialogFragment to confirm user selection
+//Used for both active and archived ArrayLists because the code is the same
+
+//itemsOfInterest is the ArrayList passed from the fragment that called this activity and is the one being displayed and checked off
+//others is the other ArrayList used to handle archiving/unarchiving
+//transfer is an ArrayList used to maintain the original ArrayList, both for comparison and to ensure "ToDoItem.selected" remains false
+//for all objects being passed back
+//selected is used to keep track of which items the user has selected
+
 public class EditMode extends FragmentActivity {
 
 	private ArrayList<ToDoItem> itemsOfInterest;
@@ -52,7 +63,7 @@ public class EditMode extends FragmentActivity {
     	//Gets the view that called EditMode
     	viewFrom = getIntent().getStringExtra("View");
 
-    	//Assigns EditModeCustomArrayAdapter to ListView + displays ArrayList of items
+    	//Assigns EditModeCustomArrayAdapter to ListView and displays the ArrayList of items
     	final SelectingCustomArrayAdapter toDoItemsViewAdapter = new SelectingCustomArrayAdapter(this, itemsOfInterest);
     	itemList.setAdapter(toDoItemsViewAdapter);
     	
@@ -81,14 +92,10 @@ public class EditMode extends FragmentActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
+		
 		int id = item.getItemId();
 		
-		//When an option is selected, create a dialogFragment to confirm the action
-		//Code derived from Android Developer website
-		//http://developer.android.com/guide/topics/ui/dialogs.html
+		//When an option is selected, create a DialogFragment to confirm his selection
 		if (id == R.id.action_delete) {
 			if (selected.isEmpty()){
 				Toast.makeText(this, "No items have been selected", Toast.LENGTH_SHORT).show();
@@ -116,6 +123,7 @@ public class EditMode extends FragmentActivity {
 	
 	//When "confirm" is clicked on dialogBox, performs an action based on which button is clicked
 	public void doPositiveClick(String dialogID){
+		
 		if (dialogID.equals("action_delete")){
 			for (int i = 0; i < selected.size(); i++){
 				transfer.remove(selected.get(i));
@@ -131,10 +139,12 @@ public class EditMode extends FragmentActivity {
 			}
 		}
 		
+		//Regardless of the action, after relocating/removing the objects from the proper ArrayList
+		//All the ArrayLists are placed into an Intent and sent back to the MainActivity to parse
 		Intent archiveIntent = new Intent(this,MainActivity.class);
-		archiveIntent.setType("other");
-		archiveIntent.putExtra("uniqueID", "editItem");
-		archiveIntent.putExtra("View", viewFrom);
+		archiveIntent.setType("other"); //Identifier used to identify useful intents to the intent used to launch app
+		archiveIntent.putExtra("uniqueID", "editItem"); //Identifier used to identify the different intents
+		archiveIntent.putExtra("View", viewFrom); //Identifier used to display the view of the fragment which called this function and to properly allocate ArrayLists
 		archiveIntent.putExtra("interest", new ItemWrapper(transfer));
 		archiveIntent.putExtra("others", new ItemWrapper(otherItems));
 		startActivity(archiveIntent);
@@ -145,8 +155,8 @@ public class EditMode extends FragmentActivity {
 		
 	}
 
-	//DialogFragment
-	//Code derived from Android Developer website
+	//Displays a DialogFragment to confirm selection with user
+	//Android Developer web site referenced in developing this section of code
 	//http://developer.android.com/guide/topics/ui/dialogs.html
 	public static class ConfirmationFragment extends DialogFragment {
 	    
@@ -170,10 +180,10 @@ public class EditMode extends FragmentActivity {
 	                	   ((EditMode)getActivity()).doNegativeClick();
 	                   }
 	               });
-	        // Create the AlertDialog object and return it
 	        return builder.create();
 		}
 		
+		//Called to create a new instance of the fragment to differentiate between buttons being pressed
 		public static ConfirmationFragment newInstance(String displayMessage, String displayID){
 			ConfirmationFragment confirmationFragment = new ConfirmationFragment();
 			

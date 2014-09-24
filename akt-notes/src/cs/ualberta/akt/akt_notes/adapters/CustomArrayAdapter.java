@@ -13,10 +13,14 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.CheckBox;
 
+//This class is used to display the ArrayList objects in the fragments called by MainActivity
+//Nearly identical to SelectingCustomArrayAdapter but uses a different layout xml so the user can see a visual difference
+
 public class CustomArrayAdapter extends ArrayAdapter<ToDoItem> {
 	
 	private ArrayList<ToDoItem> itemsOfInterest = null;
 	
+	//Initializes the adapter with the ArrayList we wish to display
 	public CustomArrayAdapter(Context context, ArrayList<ToDoItem> itemsOfInterest) {
 		super(context,R.layout.list_item, itemsOfInterest);
 		
