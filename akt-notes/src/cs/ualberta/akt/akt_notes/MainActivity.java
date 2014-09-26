@@ -66,7 +66,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         
         actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(false);
-        actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
         
         for (String title : titles) {
