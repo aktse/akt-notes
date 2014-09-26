@@ -40,6 +40,7 @@ import android.widget.TextView;
 //Implements a DialogFragment to summarize number of archived/unarchived items and whether they are checked off or not
 //onCreate implements loading from file -> may generate error on first load because file doesn't exist but it doesn't happen every time
 //onPause implements saving to file because it will be called no matter what if the app is closed
+//Implementation of classes other than MainActivity in this file allows for easy passing of the private ArrayLists
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener{
 	

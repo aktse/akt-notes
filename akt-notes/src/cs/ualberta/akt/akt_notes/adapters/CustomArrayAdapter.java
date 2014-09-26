@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.CheckBox;
 
 //This class is used to display the ArrayList objects in the fragments called by MainActivity
+//Necessary to create check boxes in a ListView
 //Nearly identical to SelectingCustomArrayAdapter but uses a different layout xml so the user can see a visual difference
 
 public class CustomArrayAdapter extends ArrayAdapter<ToDoItem> {

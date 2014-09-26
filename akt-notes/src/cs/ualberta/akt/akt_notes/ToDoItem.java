@@ -26,10 +26,6 @@ public class ToDoItem implements Serializable {
 		return toDoItem;
 	}
 	
-	public void setToDoItem(String toDoItem) {
-		this.toDoItem = toDoItem;
-	}
-	
 	public Boolean getCheckedOff() {
 		return checkedOff;
 	}
