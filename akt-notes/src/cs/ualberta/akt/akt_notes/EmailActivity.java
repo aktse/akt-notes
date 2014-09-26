@@ -127,17 +127,15 @@ public class EmailActivity extends FragmentActivity {
 			j++;
 		}
 		
-		//StackOverflow was referenced in developing this section of code
-		//http://stackoverflow.com/questions/2197741/how-can-i-send-emails-from-my-android-application
 		Intent emailIntent = new Intent(Intent.ACTION_SEND);
 		emailIntent.setType("message/rfc822");
 		emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Your To Do Items");
 		emailIntent.putExtra(Intent.EXTRA_TEXT, emailContents);
 		try {
-		    startActivity(Intent.createChooser(emailIntent, "Sending mail"));
+		    startActivity(Intent.createChooser(emailIntent, "Preparing to send email"));
 		    finish();
-		} catch (android.content.ActivityNotFoundException ex) {
-		    Toast.makeText(this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 	

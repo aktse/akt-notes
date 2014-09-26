@@ -450,18 +450,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		}
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	//DialogFragment for creating a pop-up to summarize number of archived/unarchived items
 	public static class SummarizeFragment extends DialogFragment{
 		

@@ -8,10 +8,10 @@ public class ToDoItem implements Serializable {
 
 	private static final long serialVersionUID = 3234955922865625246L;
 	
-	public String toDoItem;
-	public Boolean checkedOff;
-	public Boolean archived;
-	public Boolean selected;
+	private String toDoItem;
+	private Boolean checkedOff;
+	private Boolean archived;
+	private Boolean selected;
 	
 	//Initializes with string from user input
 	public ToDoItem(String toDoItem) {
