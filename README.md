@@ -26,7 +26,11 @@ During any of these 3 views, the user is able to press back and navigate back to
 Resources
 
 Action Bar icons were taken from: https://developer.android.com/design/downloads/index.html
+
 Tutorials referenced during the development of this app include:
+
 	Android tab views: //http://developer.android.com/training/implementing-navigation/lateral.html
+	
 	Android popup dialogs: //http://developer.android.com/guide/topics/ui/dialogs.html
+	
 	Android API reference: http://developer.android.com/reference/packages.html
