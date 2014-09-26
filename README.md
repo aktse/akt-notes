@@ -5,8 +5,11 @@ CMPUT 301 A1
 
 
 "To Do" app containing 2 views, 1 for the list of active items and 1 for the list of archived items. In both views, you can tap on the selected item to check off and uncheck your items. On the action bar of both views, there are options allowing you to:
+
 	1. Create a popup containing a summary of how many active and archived items exist and how many of each are completed/incomplete
+	
 	2. Enter the respective view's "Edit Mode"
+
 	3. Enter the "Email" view, containing a sectioned list containing both the active and archived items
 
 In addition to these options, the view containing the active items has an option that allows you to add an item to the active items list.
